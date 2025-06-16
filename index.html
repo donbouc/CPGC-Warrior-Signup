@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Warrior Tee Time Signups</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 1rem;
+      margin: 0;
+    }
+    h1 {
+      text-align: center;
+      font-size: 1.2rem;
+    }
+    .section {
+      background: #fff;
+      padding: 1rem;
+      margin: 1rem auto;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      max-width: 600px;
+    }
+    label {
+      font-weight: bold;
+    }
+    .slot {
+      display: flex;
+      align-items: center;
+      margin: 0.5rem 0;
+    }
+    .slot input[type="checkbox"] {
+      margin-left: 33%;
+      margin-right: 0.5rem;
+    }
+    .slot-divider {
+      height: 0.5rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 0.4rem;
+      text-align: left;
+    }
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1rem;
+      }
+      th:nth-child(4), td:nth-child(4) {
+        display: none;
+      }
+    }
+  </style>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDkzOIxvCGnyL24kVT6GwJT_yicPbVh48A",
+      authDomain: "cpgc-warrior-signups.firebaseapp.com",
+      projectId: "cpgc-warrior-signups",
+      storageBucket: "cpgc-warrior-signups.appspot.com",
+      messagingSenderId: "904508301160",
+      appId: "1:904508301160:web:16a551caeabee2ebf140dd"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    let slots = [];
+    let signups = {};
+
+    const slotSection = document.getElementById("slot-section");
+    const signupList = document.getElementById("signupList");
+    const emptyMessage = document.getElementById("emptyMessage");
+
+    function renderSlots() {
+      slotSection.innerHTML = "";
+      slots.forEach(slot => {
+        const div = document.createElement("div");
+        div.className = "slot";
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.value = slot;
+        checkbox.id = slot;
+        const label = document.createElement("label");
+        label.htmlFor = slot;
+        label.textContent = slot;
+        div.appendChild(checkbox);
+        div.appendChild(label);
+        slotSection.appendChild(div);
+      });
+    }
+
+    function renderSignups() {
+      signupList.innerHTML = "";
+      let anySignups = false;
+      for (const slot of slots) {
+        let rowsAdded = false;
+        if (signups[slot]) {
+          signups[slot].forEach(entry => {
+            const row = document.createElement("tr");
+            const slotTd = document.createElement("td");
+            slotTd.textContent = slot;
+            const nameTd = document.createElement("td");
+            nameTd.textContent = entry.name;
+            const removeTd = document.createElement("td");
+            const btn = document.createElement("button");
+            btn.textContent = "Remove";
+            btn.onclick = () => {
+              signups[slot] = signups[slot].filter(e => e.name !== entry.name);
+              updateDoc(doc(db, "signups", "data"), { data: signups });
+              renderSignups();
+            };
+            removeTd.appendChild(btn);
+            const timeTd = document.createElement("td");
+            timeTd.textContent = entry.time;
+            row.appendChild(slotTd);
+            row.appendChild(nameTd);
+            row.appendChild(removeTd);
+            row.appendChild(timeTd);
+            signupList.appendChild(row);
+            rowsAdded = true;
+            anySignups = true;
+          });
+        }
+        if (rowsAdded) {
+          const spacer = document.createElement("tr");
+          const td = document.createElement("td");
+          td.colSpan = 4;
+          td.className = "slot-divider";
+          spacer.appendChild(td);
+          signupList.appendChild(spacer);
+        }
+      }
+      emptyMessage.style.display = anySignups ? "none" : "block";
+    }
+
+    document.getElementById("submitSignup").onclick = async () => {
+      const name = document.getElementById("name").value.trim();
+      if (!name) return alert("Enter your name");
+      const now = new Date().toLocaleString();
+      document.querySelectorAll("input[type=checkbox]:checked").forEach(cb => {
+        if (!signups[cb.value]) signups[cb.value] = [];
+        signups[cb.value].push({ name, time: now });
+      });
+      await setDoc(doc(db, "signups", "data"), { data: signups });
+      renderSignups();
+    };
+
+    document.getElementById("adminLoginBtn").onclick = () => {
+      const pass = document.getElementById("adminPass").value;
+      if (pass === "golf2025") {
+        document.getElementById("admin-panel").style.display = "block";
+        document.getElementById("adminLoginArea").style.display = "none";
+      } else {
+        alert("Wrong password");
+      }
+    };
+
+    document.getElementById("applyChangesBtn").onclick = async () => {
+      const week = document.getElementById("weekInput").value;
+      const newSlots = document.getElementById("slotsInput").value.trim().split("\n").map(s => s.trim()).filter(Boolean);
+      if (week) {
+        document.getElementById("heading").textContent = `Warrior Tee Time Signups for the Week of ${week}`;
+        await setDoc(doc(db, "config", "week"), { week });
+      }
+      if (newSlots.length > 0) {
+        slots = newSlots;
+        await setDoc(doc(db, "config", "slots"), { slots });
+        renderSlots();
+        renderSignups();
+      }
+    };
+
+    document.getElementById("deleteAllBtn").onclick = async () => {
+      const confirmed = confirm("Are you sure you want to delete all signups?");
+      if (!confirmed) return;
+      signups = {};
+      await setDoc(doc(db, "signups", "data"), { data: signups });
+      renderSignups();
+      alert("All signups deleted.");
+    };
+
+    async function loadData() {
+      const weekDoc = await getDoc(doc(db, "config", "week"));
+      if (weekDoc.exists()) {
+        const week = weekDoc.data().week;
+        document.getElementById("heading").textContent = `Warrior Tee Time Signups for the Week of ${week}`;
+        document.getElementById("weekInput").value = week;
+      }
+      const slotDoc = await getDoc(doc(db, "config", "slots"));
+      if (slotDoc.exists()) {
+        slots = slotDoc.data().slots;
+      } else {
+        slots = [];
+      }
+      const signupDoc = await getDoc(doc(db, "signups", "data"));
+      if (signupDoc.exists()) {
+        signups = signupDoc.data().data || {};
+      }
+      renderSlots();
+      renderSignups();
+    }
+
+    window.onload = loadData;
+  </script>
+</head>
+<body>
+  <h1 id="heading">Warrior Tee Time Signups for the Week of</h1>
+  <div class="section">
+    <label for="name"><strong>Your Name:</strong></label>
+    <input type="text" id="name" placeholder="Enter your name" />
+    <div id="slot-section"></div>
+    <button id="submitSignup">Submit Signup</button>
+    <div id="signupDisplay">
+      <h2>All Signups</h2>
+      <table>
+        <thead>
+          <tr><th>Slot</th><th>Name</th><th>Remove</th><th>Signed Up</th></tr>
+        </thead>
+        <tbody id="signupList"></tbody>
+      </table>
+      <div id="emptyMessage" style="display:none; text-align:center; margin-top:1rem; color:gray;">No signups yet</div>
+    </div>
+  </div>
+
+  <div class="section" id="adminLoginArea">
+    <label for="adminPass">Admin Password:</label>
+    <input type="password" id="adminPass" placeholder="Enter admin password" />
+    <button id="adminLoginBtn">Login as Admin</button>
+  </div>
+
+  <div class="section" id="admin-panel" style="display:none">
+    <label for="weekInput">Week of:</label>
+    <input type="text" id="weekInput" placeholder="e.g. 06/24/2025" />
+    <label for="slotsInput">Slot Dates:</label>
+    <textarea id="slotsInput" rows="4" placeholder="e.g. Monday 9:00am\nTuesday 10:00am"></textarea>
+    <button id="applyChangesBtn">Apply Changes</button>
+    <button id="deleteAllBtn">Delete All Signups</button>
+  </div>
+</body>
+</html>
+
+
+
