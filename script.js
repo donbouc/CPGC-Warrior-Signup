@@ -99,8 +99,52 @@ function setupEventListeners() {
     if (pass === "golf2025") {
       document.getElementById("admin-panel").style.display = "block";
       document.getElementById("adminLoginArea").style.display = "none";
+      
+      // Load the current comment if there is one
+      loadAdminComment();
     } else {
       alert("Wrong password");
+    }
+  };  document.getElementById("saveCommentBtn").onclick = async () => {
+    const commentElement = document.getElementById("adminComment");
+    if (!commentElement) {
+      console.error("Comment textarea not found");
+      alert("Error: Comment textarea not found");
+      return;
+    }
+    
+    const comment = commentElement.value.trim();
+    console.log("Comment button clicked, saving:", comment);
+    const success = await saveAdminComment(comment);
+    
+    if (success) {
+      alert("Comment saved and displayed successfully!");
+      // Force display update
+      const commentBanner = document.getElementById("admin-comment-banner");
+      const commentText = document.getElementById("admin-comment-text");
+      
+      if (comment) {
+        // Use innerHTML with line break conversion for immediate display
+        commentText.innerHTML = comment.replace(/\n/g, '<br>');
+        commentBanner.style.display = "block";
+      } else {
+        commentBanner.style.display = "none";
+      }
+    }
+  };
+
+  document.getElementById("clearCommentBtn").onclick = async () => {
+    const commentElement = document.getElementById("adminComment");
+    if (commentElement) {
+      commentElement.value = "";
+    }
+    await saveAdminComment("");
+    alert("Comment cleared!");
+    
+    // Hide the banner
+    const commentBanner = document.getElementById("admin-comment-banner");
+    if (commentBanner) {
+      commentBanner.style.display = "none";
     }
   };
 
@@ -129,6 +173,49 @@ function setupEventListeners() {
   };
 }
 
+// Function to save admin comment to Firestore
+async function saveAdminComment(comment) {
+  try {
+    console.log("Saving comment:", comment);
+    await setDoc(doc(db, "config", "comment"), { comment });
+    console.log("Comment saved to Firestore");
+    displayAdminComment(comment);
+    return true;
+  } catch (error) {
+    console.error("Error saving comment:", error);
+    alert("Error saving comment: " + error.message);
+    return false;
+  }
+}
+
+// Function to load admin comment from Firestore
+async function loadAdminComment() {
+  const commentDoc = await getDoc(doc(db, "config", "comment"));
+  if (commentDoc.exists()) {
+    const comment = commentDoc.data().comment;
+    document.getElementById("adminComment").value = comment;
+    displayAdminComment(comment);
+  }
+}
+
+// Function to display the admin comment
+function displayAdminComment(comment) {
+  const commentBanner = document.getElementById("admin-comment-banner");
+  const commentText = document.getElementById("admin-comment-text");
+  
+  // Debug output to console to verify the comment values
+  console.log("Displaying comment:", comment);
+  console.log("Comment elements:", commentBanner, commentText);
+  
+  if (comment && comment.trim() !== "") {
+    // Use innerHTML to preserve line breaks
+    commentText.innerHTML = comment.replace(/\n/g, '<br>');
+    commentBanner.style.display = "block";
+  } else {
+    commentBanner.style.display = "none";
+  }
+}
+
 async function loadData() {
   const weekDoc = await getDoc(doc(db, "config", "week"));
   if (weekDoc.exists()) {
@@ -146,9 +233,49 @@ async function loadData() {
   if (signupDoc.exists()) {
     signups = signupDoc.data().data || {};
   }
+  
+  // Load admin comment - moved this part to ensure it loads properly
+  try {
+    const commentDoc = await getDoc(doc(db, "config", "comment"));
+    console.log("Comment doc:", commentDoc.exists() ? commentDoc.data() : "No comment doc exists");
+    if (commentDoc.exists()) {
+      const comment = commentDoc.data().comment;
+      // Set the textarea value if admin is logged in
+      const adminComment = document.getElementById("adminComment");
+      if (adminComment) adminComment.value = comment;
+      
+      // Display the comment
+      displayAdminComment(comment);
+    }
+    
+    // Validate comment elements regardless of whether a comment exists
+    validateCommentElements();
+  } catch (error) {
+    console.error("Error loading comment:", error);
+  }
+  
   renderSlots();
   renderSignups();
 }
+
+// Function to validate comment UI elements
+function validateCommentElements() {
+  const banner = document.getElementById("admin-comment-banner");
+  const text = document.getElementById("admin-comment-text");
+  
+  console.log("Validating UI elements:");
+  console.log("- Banner exists:", !!banner);
+  console.log("- Text element exists:", !!text);
+  
+  if (!banner) {
+    console.error("Admin comment banner element is missing!");
+  }
+  
+  if (!text) {
+    console.error("Admin comment text element is missing!");
+  }
+}
+
 
 // Initialize the application when the DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {

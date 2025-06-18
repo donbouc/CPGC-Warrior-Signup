@@ -1,5 +1,43 @@
 /* Styles for Warrior Tee Time Signups */
 
+/* Admin Comment Banner */
+#admin-comment-banner {
+  background: transparent;
+  color: #333;
+  padding: 10px 15px;
+  text-align: center;
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 10px auto;
+  font-weight: bold;
+  z-index: 100;
+  max-width: 90%;
+}
+
+/* Style for the admin comment text to respect line breaks */
+#admin-comment-text {
+  white-space: pre-wrap;
+}
+
+/* Admin Section */
+.admin-section {
+  margin: 1rem 0;
+  padding: 0.5rem;
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+}
+
+.button-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.button-row button {
+  flex: 1;
+}
+
 /* Top Image Styling */
 .top-centered-img {
   display: block;

@@ -9,6 +9,11 @@
 </head>
 <body>
   <img src="images/GolfWarrior2.jpg" alt="CPGC Warriors" class="top-centered-img">
+    <!-- Admin Comment Banner (hidden by default) -->
+  <div id="admin-comment-banner" style="display:none">
+    <div id="admin-comment-text" style="margin: 0; padding: 5px;"></div>
+  </div>
+  
   <h1 id="heading">Warrior Tee Time Signups for the Week of</h1>
   <div class="section">
     <label for="name"><strong>Your Name:</strong></label>
@@ -38,6 +43,17 @@
     <input type="text" id="weekInput" placeholder="e.g. 06/24/2025" />
     <label for="slotsInput">Slot Dates:</label>
     <textarea id="slotsInput" rows="4" placeholder="e.g. Monday 9:00am\nTuesday 10:00am"></textarea>
+    
+    <!-- Admin Comment Section -->
+    <div class="admin-section">
+      <label for="adminComment">Comment Banner:</label>
+      <textarea id="adminComment" rows="2" placeholder="Enter a comment to display at the top of the page"></textarea>
+      <div class="button-row">
+        <button id="saveCommentBtn">Save Comment</button>
+        <button id="clearCommentBtn">Clear Comment</button>
+      </div>
+    </div>
+    
     <button id="applyChangesBtn">Apply Changes</button>
     <button id="deleteAllBtn">Delete All Signups</button>
   </div>
