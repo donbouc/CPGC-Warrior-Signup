@@ -1,73 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    .top-centered-img {
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
-      margin-top: 35px;
-      width: 35vw;      /* Use viewport width units for better scaling */
-      max-width: 90%;   /* Prevents image from going outside screen */
-      height: auto;
-    }
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Warrior Tee Time Signups</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
-      padding: 1rem;
-      margin: 0;
-    }
-    h1 {
-      text-align: center;
-      font-size: 1.2rem;
-    }
-    .section {
-      background: #fff;
-      padding: 1rem;
-      margin: 1rem auto;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      max-width: 600px;
-    }
-    label {
-      font-weight: bold;
-    }
-    .slot {
-      display: flex;
-      align-items: center;
-      margin: 0.5rem 0;
-    }
-    .slot input[type="checkbox"] {
-      margin-left: 33%;
-      margin-right: 0.5rem;
-    }
-    .slot-divider {
-      height: 0.5rem;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1rem;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 0.4rem;
-      text-align: left;
-    }
-    @media (max-width: 600px) {
-      h1 {
-        font-size: 1rem;
-      }
-      th:nth-child(4), td:nth-child(4) {
-        display: none;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
     import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
