@@ -36,6 +36,126 @@
 
 .button-row button {
   flex: 1;
+  padding: 8px;
+  cursor: pointer;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.button-row button:hover {
+  background-color: #e0e0e0;
+}
+
+#addSlotsBtn {
+  background-color: #e7f7e7;
+}
+
+#clearSlotsBtn {
+  background-color: #ffebeb;
+}
+
+/* Slot Management Styles */
+.slot-controls {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  justify-content: space-between;
+}
+
+#sortSlotsBtn {
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#sortSlotsBtn:hover {
+  background-color: #e0e0e0;
+}
+
+.slot-help {
+  color: #666;
+  font-size: 0.85rem;
+}
+
+.slot-list-container {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  margin-top: 10px;
+}
+
+.slot-list {
+  padding: 5px;
+}
+
+.slot-item {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  margin: 4px 0;
+  background-color: #f8f8f8;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  position: relative;
+}
+
+.slot-item:hover {
+  background-color: #f0f0f0;
+}
+
+.slot-drag-handle {
+  cursor: move;
+  margin-right: 8px;
+  color: #999;
+  font-size: 16px;
+}
+
+.slot-name {
+  flex-grow: 1;
+  margin-right: 8px;
+  padding: 4px;
+  cursor: text;
+  border-radius: 3px;
+}
+
+.slot-name:hover {
+  background-color: #e9e9e9;
+}
+
+.slot-name.editing {
+  border: 1px solid #aaa;
+  background-color: white;
+  padding: 3px;
+}
+
+.slot-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.slot-edit-btn, .slot-delete-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 2px 5px;
+  border-radius: 3px;
+}
+
+.slot-edit-btn {
+  color: #2963a3;
+}
+
+.slot-delete-btn {
+  color: #c33;
+}
+
+.slot-edit-btn:hover, .slot-delete-btn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 /* Top Image Styling */
@@ -68,7 +188,7 @@ h1 {
   margin: 1rem auto;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  max-width: 600px;
+  max-width: 800px; /* Increased from 600px to allow more space on desktop */
 }
 
 label {
@@ -78,13 +198,47 @@ label {
 /* Slot Styling */
 .slot {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   margin: 0.5rem 0;
+  border-bottom: 1px dashed #ccc;
+  padding-bottom: 8px;
 }
 
-.slot input[type="checkbox"] {
+.slot-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.slot-header input[type="checkbox"] {
   margin-left: 33%;
   margin-right: 0.5rem;
+}
+
+.slot-header label {
+  font-weight: bold;
+}
+
+.bird-options {
+  margin-left: 40%;
+  display: flex;
+  flex-direction: column;
+  padding-left: 10px;
+  border-left: 3px solid #eaeaea;
+}
+
+.bird-option {
+  display: flex;
+  align-items: center;
+  margin: 0.2rem 0;
+}
+
+.bird-option input[type="checkbox"] {
+  margin-right: 0.5rem;
+}
+
+.bird-option label {
+  font-size: 0.9rem;
 }
 
 .slot-divider {
@@ -96,12 +250,62 @@ table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 1rem;
+  table-layout: fixed;
 }
 
 th, td {
   border: 1px solid #ccc;
-  padding: 0.4rem;
+  padding: 0.5rem 0.4rem;  /* More padding for desktop */
   text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.95rem; /* Normal font size for desktop */
+}
+
+/* Make table headers bold to distinguish them */
+th {
+  font-weight: bold;
+  font-size: 0.95rem;
+  background-color: #f5f5f5; /* Light background for headers */
+  vertical-align: middle; /* Ensure proper vertical alignment */
+  line-height: 1.2; /* Proper line height for multi-line headers */
+}
+
+/* Style for multi-line headers */
+th br {
+  display: block; /* Ensure line break works properly */
+  content: " "; /* Add some spacing between lines */
+  margin: 2px 0; /* Add space between the two lines */
+}
+
+/* Column width distribution for desktop */
+th:nth-child(1), td:nth-child(1) {
+  width: 30%; /* Slot column */
+}
+
+th:nth-child(2), td:nth-child(2) {
+  width: 30%; /* Name column */
+}
+
+th:nth-child(3), td:nth-child(3) {
+  width: 10%; /* Bird Tee column - just the number */
+  text-align: center;
+}
+
+th:nth-child(4), td:nth-child(4) {
+  width: 15%; /* Remove button column */
+  text-align: center;
+}
+
+th:nth-child(5), td:nth-child(5) {
+  width: 15%; /* Date column */
+}
+
+/* Style for the remove button */
+td button {
+  padding: 2px 6px;
+  font-size: 0.8rem;
 }
 
 /* Responsive Design */
@@ -109,7 +313,147 @@ th, td {
   h1 {
     font-size: 1rem;
   }
-  th:nth-child(4), td:nth-child(4) {
+  
+  /* Hide signup time column on small screens */
+  th:nth-child(5), td:nth-child(5) {
     display: none;
+  }
+  
+  /* Adjust column widths for better mobile fit */
+  th:nth-child(1), td:nth-child(1) {
+    width: 38%; /* Slot column */
+  }
+  
+  th:nth-child(2), td:nth-child(2) {
+    width: 37%; /* Name column */
+  }
+  
+  th:nth-child(3), td:nth-child(3) {
+    width: 8%; /* Bird Tee column - just the number */
+  }
+  
+  th:nth-child(4), td:nth-child(4) {
+    width: 17%; /* Remove button column */
+  }
+  
+  /* Adjust bird options positioning for mobile */
+  .bird-options {
+    margin-left: 20%;
+  }
+  
+  .slot-header input[type="checkbox"] {
+    margin-left: 15%;
+  }
+  
+  /* Smaller font and padding for table cells on mobile */
+  th, td {
+    padding: 3px 4px;
+    font-size: 0.85rem; /* Even smaller on mobile */
+  }
+  
+  th {
+    font-size: 0.8rem;
+  }
+  
+  /* Make the button smaller on mobile */
+  td button {
+    padding: 1px 5px;
+    font-size: 0.75rem;
+  }
+}
+
+/* Ensure table fits on very small screens */
+@media (max-width: 450px) {
+  /* Further reduce padding and font sizes */
+  th, td {
+    padding: 2px 3px;
+    font-size: 0.8rem;
+  }
+  
+  th {
+    font-size: 0.75rem;
+  }
+  
+  /* Explicitly ensure signup date is hidden on small screens */
+  th:nth-child(5), td:nth-child(5) {
+    display: none;
+  }
+  
+  /* Adjust column widths for very small screens */
+  th:nth-child(1), td:nth-child(1) {
+    width: 38%; /* Slot column */
+  }
+  
+  th:nth-child(2), td:nth-child(2) {
+    width: 36%; /* Name column */
+  }
+  
+  th:nth-child(3), td:nth-child(3) {
+    width: 8%; /* Bird Tee column */
+  }
+  
+  th:nth-child(4), td:nth-child(4) {
+    width: 18%; /* Remove column */
+  }
+  
+  #signupDisplay {
+    padding: 0.5rem;
+  }
+  
+  /* Ensure table stays within container */
+  table {
+    width: 100%;
+    table-layout: fixed;
+  }
+    /* Make button even smaller and use a more compact style */
+  td button {
+    padding: 1px 4px;
+    font-size: 0.7rem;
+    line-height: 1.2;
+  }
+}
+
+/* Desktop optimizations for larger screens */
+@media (min-width: 992px) {
+  .section {
+    max-width: 900px; /* Even wider for large desktop screens */
+  }
+  
+  th, td {
+    padding: 8px 10px; /* More generous padding */
+    font-size: 1rem; /* Standard font size */
+  }
+  
+  th {
+    font-size: 1rem;
+  }
+  
+  /* Remove ellipsis on large screens to show more text */
+  td {
+    text-overflow: clip;
+    overflow: visible;
+    white-space: normal; /* Allow text to wrap on large screens */
+    word-break: break-word; /* Break words to prevent overflow */
+  }
+  
+  /* Specific adjustments for columns on large screens */
+  th:nth-child(1), td:nth-child(1) {
+    width: 28%; /* Slot column */
+  }
+  
+  th:nth-child(2), td:nth-child(2) {
+    width: 28%; /* Name column */
+  }
+  
+  th:nth-child(3), td:nth-child(3) {
+    width: 8%; /* Bird Tee column */
+  }
+  
+  th:nth-child(4), td:nth-child(4) {
+    width: 16%; /* Remove button column */
+  }
+  
+  th:nth-child(5), td:nth-child(5) {
+    width: 20%; /* Date column - more space on large screens */
   }
 }

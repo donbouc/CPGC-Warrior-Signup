@@ -19,12 +19,17 @@
     <label for="name"><strong>Your Name:</strong></label>
     <input type="text" id="name" placeholder="Enter your name" />
     <div id="slot-section"></div>
-    <button id="submitSignup">Submit Signup</button>
-    <div id="signupDisplay">
+    <button id="submitSignup">Submit Signup</button>    <div id="signupDisplay">
       <h2>All Signups</h2>
       <table>
         <thead>
-          <tr><th>Slot</th><th>Name</th><th>Remove</th><th>Signed Up</th></tr>
+          <tr>
+            <th>Slot</th>
+            <th>Name</th>
+            <th>BirdT</th>
+            <th>Remove</th>
+            <th>Signup<br>Date</th>
+          </tr>
         </thead>
         <tbody id="signupList"></tbody>
       </table>
@@ -37,12 +42,33 @@
     <input type="password" id="adminPass" placeholder="Enter admin password" />
     <button id="adminLoginBtn">Login as Admin</button>
   </div>
-
   <div class="section" id="admin-panel" style="display:none">
     <label for="weekInput">Week of:</label>
     <input type="text" id="weekInput" placeholder="e.g. 06/24/2025" />
-    <label for="slotsInput">Slot Dates:</label>
-    <textarea id="slotsInput" rows="4" placeholder="e.g. Monday 9:00am\nTuesday 10:00am"></textarea>
+      <!-- Slots Input Section with Add/Clear buttons -->
+    <div class="admin-section">
+      <label for="slotsInput">Add New Slots:</label>
+      <textarea id="slotsInput" rows="3" placeholder="e.g. Monday 9:00am\nTuesday 10:00am"></textarea>
+      <div class="button-row">
+        <button id="addSlotsBtn">Add Slots</button>
+        <button id="clearSlotsBtn">Clear All Slots</button>
+      </div>
+    </div>
+      <!-- Slot Management Section -->
+    <div class="admin-section">
+      <h3>Manage Slots</h3>
+      <div class="slot-controls">
+        <button id="sortSlotsBtn" title="Sort slots alphabetically">Sort Slots</button>
+        <span class="slot-help">Drag and drop to reorder. Click slot text to edit.</span>
+      </div>
+      <div id="slotManager">
+        <div class="slot-list-container">
+          <div id="slotList" class="slot-list">
+            <!-- Slots will be added here dynamically -->
+          </div>
+        </div>
+      </div>
+    </div>
     
     <!-- Admin Comment Section -->
     <div class="admin-section">
