@@ -1,6 +1,6 @@
 # CPGC Warrior Tee Time Signup System
 
-![CPGC Warriors Logo](images/GolfWarrior2.jpg)
+![CPGC Warriors Logo](images/GolfWarrior2.png)
 
 A web-based application for managing golf tee time signups for the CPGC Warriors group.
 
